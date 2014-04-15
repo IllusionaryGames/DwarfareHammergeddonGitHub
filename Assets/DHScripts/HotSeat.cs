@@ -504,6 +504,11 @@ public class HotSeat : MonoBehaviour {
 		}
 	}
 
+	public string GetLastInvoke()
+	{
+		return m_strLastInvoke;
+	}
+
 	public DwarfChar GetActiveDwarf()
 	{
 		if(ActiveDwarf != null)

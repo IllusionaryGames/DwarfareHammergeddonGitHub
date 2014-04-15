@@ -620,10 +620,10 @@ public class HUDSetup : MonoBehaviour
 				if (GUI.Button (new Rect (m_fScreenWidthCenter-(m_fAvatarSize*1.25f/2f),m_fScreenHeightCenter-(m_fAvatarSize)+ (i * (m_fAvatarSize *0.75f)),m_fAvatarSize*1.25f,m_fAvatarSize/2.5f), Buttons[i], PauseStyle)) {
 					switch (i) {
 						//Tutorial
-					case 0:
+					case 0: // Weiter
 						m_bIsTimeRunning = true;
 						m_hotseatref.m_bPausePhase = false;
-							Debug.Log(m_hotseatref.m_bPausePhase);
+						m_hotseatref.InvokeRepeating(m_hotseatref.GetLastInvoke(), 1f, 1f);
 						break;
 						//Join
 					case 1:
