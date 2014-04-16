@@ -327,9 +327,17 @@ public class Team : MonoBehaviour {
 		m_arrTeams[_iTeam - 1].bVictoryBaseDestruction = true; // checked in ongui HUDsetup
 	}
 
-	void AdjustActionpointsInTeam (int _iActionpoints, int _iTeam)
+	public void AdjustActionpointsInTeam (int _iActionpoints, int _iTeam)
 	{
 		m_arrTeams[_iTeam - 1].iActionpointsTeam += _iActionpoints;
+	}
+
+	public bool DoesActiveTeamHaveEnoughActionpoints(int _iSubstractActionPoints)
+	{
+		if(m_arrTeams[refHotSeat.GetActiveTeam() - 1].iActionpointsTeam - _iSubstractActionPoints >= 0)
+			return true;
+		else
+			return false;
 	}
 
 	void SetUpgradeActive (string _strUpgradeName, int _iTeam) // Team starts at 1 not 0

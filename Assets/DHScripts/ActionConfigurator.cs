@@ -10,4 +10,5 @@ public class ActionConfigurator : MonoBehaviour
 	public int PlantingBomb;
 	public int SettingBlock;
 	public int BuildingLadder;
+	public int ChangeActiveDwarf;
 }

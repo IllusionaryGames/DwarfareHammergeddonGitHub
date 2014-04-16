@@ -19,9 +19,9 @@ public class Map : MonoBehaviour {
 
 	// References from other Scripts
 	private Explosion refExplosion;
-
+	private DwarfChar refDwarfChar;
 	private Mouse2D mouse2D;
-
+	private HotSeat refHotSeat;
 	private LevelXMLSaver levelXMLSaver;
 
 	private DwarfType refDwarfType;
@@ -93,6 +93,7 @@ public class Map : MonoBehaviour {
 	void Awake()
 	{
 		// get references
+		refHotSeat = GetComponent<HotSeat>();
 		refExplosion = GetComponent<Explosion> ();
 		mouse2D = GetComponent<Mouse2D> ();
 		refLoadLevelTexture = GetComponent<LoadLevelTexture> ();
@@ -361,22 +362,6 @@ public class Map : MonoBehaviour {
 		}
 	}
 
-	/*public List<Vector2> GetBasePositions()
-	{
-		List<Vector2> lisVec2BasePositions = new List<Vector2>();
-		for (int x = 0; x < m_arrMap.GetLength(0); x++)
-		{
-			for (int y = 0; y < m_arrMap.GetLength(1); y++)
-			{
-				if (m_arrMap [x, y].iBlockID == 70)
-				{
-					lisVec2BasePositions.Add(new Vector2(x, y));
-				}
-			}
-		}
-		return lisVec2BasePositions;
-	}*/
-
 	public bool IsRecoverable(int _iXGrid, int _iYGrid)
 	{
 		if(GetBlockTypeByID(m_arrMap[_iXGrid, _iYGrid].iBlockID).m_bIsRecoverable)
@@ -536,6 +521,100 @@ public class Map : MonoBehaviour {
 
 		return false;
 	}
+
+	public bool IsDwarfAtPosition(int _iXGrid, int _iYGrid)
+	{
+		if( m_arrMap[_iXGrid, _iYGrid].iBlockID == 74 || m_arrMap[_iXGrid, _iYGrid].iBlockID == 75 || m_arrMap[_iXGrid, _iYGrid].iBlockID == 76 
+		 || m_arrMap[_iXGrid, _iYGrid].iBlockID == 80 || m_arrMap[_iXGrid, _iYGrid].iBlockID == 81 || m_arrMap[_iXGrid, _iYGrid].iBlockID == 82 )
+		{
+			Debug.Log("Dwarf at Position " + _iXGrid + " " + _iYGrid);
+			return true;
+		}
+		else
+			return false;
+	}
+
+	public bool IsDwarfOfTeam1(int _iXGrid, int _iYGrid)
+	{
+		if(m_arrMap[_iXGrid, _iYGrid].iBlockID == 74 || m_arrMap[_iXGrid, _iYGrid].iBlockID == 75 || m_arrMap[_iXGrid, _iYGrid].iBlockID == 76)
+		{
+			Debug.Log("Dwarf is from Team 1");
+			return true;
+		}
+		else
+			return false;
+	}
+
+	public bool IsDwarfOfTeam2(int _iXGrid, int _iYGrid)
+	{
+		if(m_arrMap[_iXGrid, _iYGrid].iBlockID == 80 || m_arrMap[_iXGrid, _iYGrid].iBlockID == 81 || m_arrMap[_iXGrid, _iYGrid].iBlockID == 82)
+		{
+			Debug.Log("Dwarf is from Team 2");
+			return true;
+		}
+		else
+			return false;
+	}
+
+	public bool IsActiveDwarfAtPosition(int _iXGrid, int _iYGrid)
+	{
+		DwarfChar ActiveDwarf = refHotSeat.GetActiveDwarf();
+		if(ActiveDwarf)
+		{
+			if(ActiveDwarf.iIndexPosX == _iXGrid && ActiveDwarf.iIndexPosY == _iYGrid)
+			{
+				Debug.Log("Active Dwarf is at Position " + _iXGrid + " " + _iYGrid);
+				return true;
+			}
+			else
+				return false;
+		}
+		else 
+		{
+			Debug.Log("No Active Dwarf");
+			return false;
+		}
+	}
+
+	public bool IsDwarfFromActiveTeam(int _iXGrid, int _iYGrid)
+	{
+		if(IsDwarfAtPosition(_iXGrid, _iYGrid))
+		{
+			int iActiveTeam = refHotSeat.GetActiveTeam();
+			if(iActiveTeam == 1)
+			{
+				if(IsDwarfOfTeam1(_iXGrid, _iYGrid))
+				{
+					Debug.Log("Dwarf is From Active Team " + iActiveTeam);
+					return true;
+				}
+				else
+					return false;
+			}
+			if(iActiveTeam == 2)
+			{
+				if(IsDwarfOfTeam2(_iXGrid, _iYGrid))
+				{
+					Debug.Log("Dwarf is From Active Team " + iActiveTeam);
+					return true;
+				}
+				else 
+					return false;
+			}
+			else
+			{
+				Debug.Log("Active Team isnt 1 or 2");
+				return false;
+			}
+		}
+		else
+		{
+			Debug.Log("There is no Dwarf At Position");
+				return false;
+		}
+	}
+
+
 
 	public LoadLevelTexture.BlockType GetBlockTypeByID (int _iID)
 	{

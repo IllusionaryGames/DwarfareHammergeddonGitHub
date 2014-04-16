@@ -51,6 +51,9 @@ public class Mouse2D : MonoBehaviour
 
 	// References from other Scripts
 	private Map refMap;
+	private DwarfChar refDwarfChar;
+	private HotSeat refHotSeat;
+	private Team refTeam;
 
 	public float HitGridX
 	{
@@ -71,7 +74,10 @@ public class Mouse2D : MonoBehaviour
 
 	void Awake()
 	{
+		refHotSeat = GetComponent<HotSeat>();
 		refMap = GetComponent<Map> ();
+		refDwarfChar = GetComponent<DwarfChar>();
+		refTeam = GetComponent<Team>();
 		MainCamera = GameObject.FindWithTag("MainCamera");
 	}
 	// Use this for initialization
@@ -113,6 +119,14 @@ public class Mouse2D : MonoBehaviour
 		{
 			bMousePressed = true;
 			goPreviewPlaneClickedLeft.transform.position = vec3NewPreviewPlanPos;
+			refMap.IsDwarfAtPosition((int)m_fHitGridIntX, (int)m_fHitGridIntY);
+			refMap.IsDwarfOfTeam1((int)m_fHitGridIntX, (int)m_fHitGridIntY);
+			refMap.IsDwarfOfTeam2((int)m_fHitGridIntX, (int)m_fHitGridIntY);
+			refMap.IsActiveDwarfAtPosition((int)m_fHitGridIntX, (int)m_fHitGridIntY);
+			refMap.IsDwarfFromActiveTeam((int)m_fHitGridIntX, (int)m_fHitGridIntY);
+			refHotSeat.SetActiveDwarf((int)m_fHitGridIntX, (int)m_fHitGridIntY);
+
+
 
 			// to startposition
 			goPreviewPlaneClickedRight.transform.position = vec3PreviewPlaneStartPosition;

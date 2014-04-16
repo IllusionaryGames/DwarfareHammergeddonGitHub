@@ -9,6 +9,7 @@ public class HotSeat : MonoBehaviour {
 	private Mouse2D refMouse2D;
 	private Map refMap;
 	private DwarfType refDwarfType;
+	private ActionConfigurator refActionConfigurator;
 
 	// Hot Seat active?
 	public bool m_bHotSeatActive;
@@ -76,6 +77,7 @@ public class HotSeat : MonoBehaviour {
 	{
 		// get References
 		refTeam = GetComponent<Team>();
+		refActionConfigurator = GetComponent<ActionConfigurator>();
 		refMouse2D = GetComponent<Mouse2D>();
 		refMap = GetComponent<Map>();
 		refDwarfType = GetComponent<DwarfType>();
@@ -326,14 +328,7 @@ public class HotSeat : MonoBehaviour {
 	{
 		m_bGetReadyPhase = true;
 		// set all Dwarfs to not active
-		for (int i = 0; i < refTeam.m_arrTeams.Length; i ++)
-		{
-			foreach(DwarfChar iter in refTeam.m_arrTeams[i].lisDwarfs)
-			{
-				iter.Active = false;
-				iter.SetOutlineShader(0f, m_col32OutlineNotActive);
-			}
-		}
+		SetAllDwarfesToNotActive();
 
 		m_iCountdownInSeconds = m_iGetReadyTime;
 		if(!m_bPausePhase)
@@ -521,4 +516,61 @@ public class HotSeat : MonoBehaviour {
 			return null;
 		}
 	}
+
+	public int GetActiveTeam()
+	{
+		return m_iActiveTeam;
+	}
+
+	public void SetAllDwarfesToNotActive()
+	{
+		// set all Dwarfs to not active
+		for (int i = 0; i < refTeam.m_arrTeams.Length; i ++)
+		{
+			foreach(DwarfChar iter in refTeam.m_arrTeams[i].lisDwarfs)
+			{
+				iter.Active = false;
+				iter.SetOutlineShader(0f, m_col32OutlineNotActive);
+			}
+		}
+	}
+
+	public void SetActiveDwarf(int _iXGrid, int _iYGrid)
+	{
+		if(refMap.IsDwarfAtPosition(_iXGrid, _iYGrid))
+	    {
+			if(refMap.IsDwarfFromActiveTeam(_iXGrid, _iYGrid))
+			{
+				SetAllDwarfesToNotActive();
+				foreach(DwarfChar CurrentDwarf in refTeam.m_arrTeams[GetActiveTeam() - 1].lisDwarfs)
+				{
+					if(CurrentDwarf.iIndexPosX == _iXGrid && CurrentDwarf.iIndexPosY == _iYGrid)
+					{
+						if(refTeam.DoesActiveTeamHaveEnoughActionpoints(refActionConfigurator.ChangeActiveDwarf))
+						{
+							CurrentDwarf.Active = true;
+							Debug.Log("Team has enough Actionpoints to change Dwarf");
+							refTeam.AdjustActionpointsInTeam(-refActionConfigurator.ChangeActiveDwarf,CurrentDwarf.iTeamID);
+							if(CurrentDwarf.iTeamID == 1)
+							{
+								CurrentDwarf.SetOutlineShader(0.005f, m_col32OutlineNotActive);
+								CurrentDwarf.SetOutlineShader(0.005f, m_col32Team1Active);
+							}
+							if(CurrentDwarf.iTeamID == 2)
+							{
+								CurrentDwarf.SetOutlineShader(0.005f, m_col32OutlineNotActive);
+								CurrentDwarf.SetOutlineShader(0.005f, m_col32Team2Active);
+							}
+
+						}
+						else
+							Debug.Log("Team has not enough Actionpoints to change Dwarf");
+
+					}
+				}
+			}
+		}
+
+	}
+
 }
