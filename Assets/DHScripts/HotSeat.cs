@@ -84,6 +84,7 @@ public class HotSeat : MonoBehaviour {
 	// Use this for initialization
 	void Start () 
 	{
+
 		m_iCountdownInSeconds = m_iGetReadyTime;
 		m_iGetReadyCounterForGUI = m_iCountdownInSeconds;
 		m_iPlayPhaseCounterForGUI = m_iPlayPhaseTimeCounter;
