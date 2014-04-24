@@ -535,7 +535,7 @@ public class HotSeat : MonoBehaviour {
 		}
 	}
 
-	public void SetActiveDwarf(int _iXGrid, int _iYGrid)
+	/*public void SetActiveDwarf(int _iXGrid, int _iYGrid)
 	{
 		if(refMap.IsDwarfAtPosition(_iXGrid, _iYGrid))
 	    {
@@ -571,6 +571,20 @@ public class HotSeat : MonoBehaviour {
 			}
 		}
 
+	}*/
+
+	public void ActivateOutlineShader(DwarfChar _DwarfChar)
+	{
+		if(_DwarfChar.iTeamID == 1)
+		{
+			_DwarfChar.SetOutlineShader(0.005f, m_col32OutlineNotActive);
+			_DwarfChar.SetOutlineShader(0.005f, m_col32Team1Active);
+		}
+		if(_DwarfChar.iTeamID == 2)
+		{
+			_DwarfChar.SetOutlineShader(0.005f, m_col32OutlineNotActive);
+			_DwarfChar.SetOutlineShader(0.005f, m_col32Team2Active);
+		}
 	}
 
 }

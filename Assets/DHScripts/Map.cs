@@ -522,7 +522,7 @@ public class Map : MonoBehaviour {
 		return false;
 	}
 
-	public bool IsDwarfAtPosition(int _iXGrid, int _iYGrid)
+	/*public bool IsDwarfAtPosition(int _iXGrid, int _iYGrid)
 	{
 		if( m_arrMap[_iXGrid, _iYGrid].iBlockID == 74 || m_arrMap[_iXGrid, _iYGrid].iBlockID == 75 || m_arrMap[_iXGrid, _iYGrid].iBlockID == 76 
 		 || m_arrMap[_iXGrid, _iYGrid].iBlockID == 80 || m_arrMap[_iXGrid, _iYGrid].iBlockID == 81 || m_arrMap[_iXGrid, _iYGrid].iBlockID == 82 )
@@ -612,7 +612,7 @@ public class Map : MonoBehaviour {
 			Debug.Log("There is no Dwarf At Position");
 				return false;
 		}
-	}
+	}*/
 
 
 

@@ -54,6 +54,7 @@ public class Mouse2D : MonoBehaviour
 	private DwarfChar refDwarfChar;
 	private HotSeat refHotSeat;
 	private Team refTeam;
+	private ActionConfigurator refActionConfigurator;
 
 	public float HitGridX
 	{
@@ -78,6 +79,7 @@ public class Mouse2D : MonoBehaviour
 		refMap = GetComponent<Map> ();
 		refDwarfChar = GetComponent<DwarfChar>();
 		refTeam = GetComponent<Team>();
+		refActionConfigurator = GetComponent<ActionConfigurator>();
 		MainCamera = GameObject.FindWithTag("MainCamera");
 	}
 	// Use this for initialization
@@ -119,12 +121,28 @@ public class Mouse2D : MonoBehaviour
 		{
 			bMousePressed = true;
 			goPreviewPlaneClickedLeft.transform.position = vec3NewPreviewPlanPos;
+			/*
 			refMap.IsDwarfAtPosition((int)m_fHitGridIntX, (int)m_fHitGridIntY);
 			refMap.IsDwarfOfTeam1((int)m_fHitGridIntX, (int)m_fHitGridIntY);
 			refMap.IsDwarfOfTeam2((int)m_fHitGridIntX, (int)m_fHitGridIntY);
 			refMap.IsActiveDwarfAtPosition((int)m_fHitGridIntX, (int)m_fHitGridIntY);
 			refMap.IsDwarfFromActiveTeam((int)m_fHitGridIntX, (int)m_fHitGridIntY);
-			refHotSeat.SetActiveDwarf((int)m_fHitGridIntX, (int)m_fHitGridIntY);
+			refHotSeat.SetActiveDwarf((int)m_fHitGridIntX, (int)m_fHitGridIntY);*/
+
+			DwarfChar ClickedDwarf = refTeam.GetDwarfCharByPosition((int)m_fHitGridIntX, (int)m_fHitGridIntY);
+			if(ClickedDwarf && !ClickedDwarf.Active && ClickedDwarf.iTeamID == refHotSeat.GetActiveTeam())
+			{
+				if(refTeam.DoesActiveTeamHaveEnoughActionpoints(refActionConfigurator.ChangeActiveDwarf))
+				   {
+					refHotSeat.SetAllDwarfesToNotActive();
+					refTeam.AdjustActionpointsInTeam(-refActionConfigurator.ChangeActiveDwarf,ClickedDwarf.iTeamID);
+					ClickedDwarf.Active = true;
+					refHotSeat.ActivateOutlineShader(ClickedDwarf);
+					Debug.Log("You clicked a non active dwarf");
+				}
+				else
+					Debug.Log("Not enough Actionpoints for Activation other Dwarf of your Team");
+			}
 
 
 
