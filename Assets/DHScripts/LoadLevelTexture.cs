@@ -31,16 +31,20 @@ public class LoadLevelTexture : MonoBehaviour
 	{
 		public Texture2D m_tex2DLevel;
 		public Color[,] m_arrcolLevel;
-		public BlockType[,] m_BlockType;
+		public BlockType[,,] m_BlockType;
 	}
 
+	public Map refMap;
 	public BlockType[] BlockTypes;
 	public Level[] Levels;
 
 	// Mauli: delete if not necessary
 	// Use this for initialization
-	void Start () 
+
+
+	void Awake () 
 	{
+		refMap = GetComponent<Map>();
 	}
 	
 	// Update is called once per frame
@@ -58,7 +62,7 @@ public class LoadLevelTexture : MonoBehaviour
 			int LevelWidth = Levels[i].m_tex2DLevel.width;
 			int LevelHeight = Levels[i].m_tex2DLevel.height;
 			Levels[i].m_arrcolLevel = new Color[LevelWidth, LevelHeight];
-			Levels[i].m_BlockType = new BlockType[LevelWidth, LevelHeight];
+			Levels[i].m_BlockType = new BlockType[LevelWidth, LevelHeight, refMap.m_iLayerAmount ];
 
 			int iPixelCounterLevel = 0;
 			Color[] pix = Levels[i].m_tex2DLevel.GetPixels (0, 0, LevelWidth , LevelHeight);
@@ -74,7 +78,7 @@ public class LoadLevelTexture : MonoBehaviour
 						if(Levels[i].m_arrcolLevel[m, n] == BlockTypes[k].m_colBlockColor)
 						{
 							// save Blocktype in Levelposition
-							Levels[i].m_BlockType[n , m] = BlockTypes[k];
+							Levels[i].m_BlockType[n , m,  refMap.m_iPlayLayer ] = BlockTypes[k];
 						}
 					}
 				}
@@ -88,7 +92,7 @@ public class LoadLevelTexture : MonoBehaviour
 	{
 		BlockType tempBlockType = new BlockType();
 		// read Blocktype in Levelposition and mapArray
-		tempBlockType = Levels[_iLevel].m_BlockType[_iXGrid, _iYGrid];
+		tempBlockType = Levels[_iLevel].m_BlockType[_iXGrid, _iYGrid,  refMap.m_iPlayLayer ];
 		return tempBlockType;
 	}
 
@@ -100,9 +104,9 @@ public class LoadLevelTexture : MonoBehaviour
 		if(_iXGrid < Levels[_iLevel].m_BlockType.GetLength(0) && _iYGrid < Levels[_iLevel].m_BlockType.GetLength(1) &&
 		   _iXGrid >= 0 && _iYGrid >= 0)
 		{
-			if(Levels[_iLevel].m_BlockType[_iXGrid, _iYGrid] != null)
+			if(Levels[_iLevel].m_BlockType[_iXGrid, _iYGrid, refMap.m_iPlayLayer ] != null)
 			{
-				return Levels[_iLevel].m_BlockType[_iXGrid, _iYGrid].iTypeID;
+				return Levels[_iLevel].m_BlockType[_iXGrid, _iYGrid, refMap.m_iPlayLayer ].iTypeID;
 			}
 		}
 		return -1; // CHECK

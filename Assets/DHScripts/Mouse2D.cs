@@ -303,17 +303,17 @@ public class Mouse2D : MonoBehaviour
 				{ 
 					for (int j = 0; j < refMap.m_arrMap.GetLength (1); j++) // height
 					{ 
-						fXPositionGrid = refMap.m_arrMap [i, j].iXIndex * refMap.m_gridX;
-						fYPositionGrid = refMap.m_arrMap [i, j].iYIndex * refMap.m_gridY;
+						fXPositionGrid = refMap.m_arrMap [i, j, refMap.m_iPlayLayer].iXIndex * refMap.m_gridX;
+						fYPositionGrid = refMap.m_arrMap [i, j, refMap.m_iPlayLayer].iYIndex * refMap.m_gridY;
 						if (fXPositionGrid - refMap.m_gridX / 2 <= p.x && 
-							refMap.m_arrMap [i, j].iXIndex * refMap.m_gridX + refMap.m_gridX / 2 > p.x) 
+							refMap.m_arrMap [i, j, refMap.m_iPlayLayer].iXIndex * refMap.m_gridX + refMap.m_gridX / 2 > p.x) 
 						{
-							m_fHitGridX = refMap.m_arrMap [i, j].iXIndex * refMap.m_gridX;
+							m_fHitGridX = refMap.m_arrMap [i, j, refMap.m_iPlayLayer].iXIndex * refMap.m_gridX;
 						}
 						if (fYPositionGrid - refMap.m_gridY / 2 <= p.y &&
 							fYPositionGrid + refMap.m_gridY / 2 > p.y) 
 						{
-							m_fHitGridY = refMap.m_arrMap [i, j].iYIndex * refMap.m_gridY;
+							m_fHitGridY = refMap.m_arrMap [i, j, refMap.m_iPlayLayer].iYIndex * refMap.m_gridY;
 						}
 					}
 				}

@@ -81,7 +81,7 @@ public class Explosion : MonoBehaviour {
 							for (int y = 0; y < refLoadLevelTexture.Levels[refMap.m_iCurrentLevel].m_tex2DLevel.height; y++) 
 							{												
 								// Find Detonation Middle
-								if(refMap.m_arrMap[x, y].iXIndex == _vec2DetonationMiddle.x && refMap.m_arrMap[x, y].iYIndex == _vec2DetonationMiddle.y)
+								if(refMap.m_arrMap[x, y, refMap.m_iPlayLayer].iXIndex == _vec2DetonationMiddle.x && refMap.m_arrMap[x, y, refMap.m_iPlayLayer].iYIndex == _vec2DetonationMiddle.y)
 								{
 									int iMiddleX = (int)_vec2DetonationMiddle.x;
 									int iMiddleY = (int)_vec2DetonationMiddle.y;
@@ -122,7 +122,7 @@ public class Explosion : MonoBehaviour {
 											{
 												if(refMap.m_arrMap.GetLength(1) > iDetonationY + 1)
 												{
-													LoadLevelTexture.BlockType CurrentBlock = refMap.GetBlockTypeByID(refMap.m_arrMap[iXUp, iYUp].iBlockID);
+													LoadLevelTexture.BlockType CurrentBlock = refMap.GetBlockTypeByID(refMap.m_arrMap[iXUp, iYUp, refMap.m_iPlayLayer].iBlockID);
 
 													// is it Base
 													if(refMap.IsBaseTeam1AtPosition(iXUp, iYUp))
@@ -166,7 +166,7 @@ public class Explosion : MonoBehaviour {
 											//CHECK Left
 											if(ExplosionProfile[b].arrbExplosionbehaviour[16 + iDiffX - 1, 16 + iDiffY]) // should block explode because of explosiontexture
 											{
-												LoadLevelTexture.BlockType CurrentBlock = refMap.GetBlockTypeByID(refMap.m_arrMap[iXLeft, iYLeft].iBlockID);
+												LoadLevelTexture.BlockType CurrentBlock = refMap.GetBlockTypeByID(refMap.m_arrMap[iXLeft, iYLeft, refMap.m_iPlayLayer].iBlockID);
 
 												// is it Base
 												if(refMap.IsBaseTeam1AtPosition(iXLeft, iYLeft))
@@ -209,7 +209,7 @@ public class Explosion : MonoBehaviour {
 											//CHECK Right
 											if(ExplosionProfile[b].arrbExplosionbehaviour[16 + iDiffX + 1, 16 + iDiffY]) // should block explode because of explosiontexture
 											{
-												LoadLevelTexture.BlockType CurrentBlock = refMap.GetBlockTypeByID(refMap.m_arrMap[iXRight, iYRight].iBlockID);
+												LoadLevelTexture.BlockType CurrentBlock = refMap.GetBlockTypeByID(refMap.m_arrMap[iXRight, iYRight, refMap.m_iPlayLayer].iBlockID);
 												// is it Base
 												if(refMap.IsBaseTeam1AtPosition(iXRight, iYRight))
 												{
@@ -254,7 +254,7 @@ public class Explosion : MonoBehaviour {
 											//CHECK Down
 											if(ExplosionProfile[b].arrbExplosionbehaviour[16 + iDiffX, 16 + iDiffY - 1]) // should block explode because of explosiontexture
 											{
-												LoadLevelTexture.BlockType CurrentBlock = refMap.GetBlockTypeByID(refMap.m_arrMap[iXDown, iYDown].iBlockID);
+												LoadLevelTexture.BlockType CurrentBlock = refMap.GetBlockTypeByID(refMap.m_arrMap[iXDown, iYDown, refMap.m_iPlayLayer].iBlockID);
 
 												// is it Base
 												if(refMap.IsBaseTeam1AtPosition(iXDown, iYDown))
@@ -335,8 +335,8 @@ public class Explosion : MonoBehaviour {
 
 	void DestroyBlockAndUpdateMap(int _iXInGrid, int _iYInGrid)
 	{
-		Destroy(refMap.m_arrMap[_iXInGrid, _iYInGrid].prefab1); // destroyed Prefab down
-		refMap.m_arrMap[_iXInGrid, _iYInGrid].iBlockID = 0; // 0 = no Block
+		Destroy(refMap.m_arrMap[_iXInGrid, _iYInGrid, refMap.m_iPlayLayer].prefab1); // destroyed Prefab down
+		refMap.m_arrMap[_iXInGrid, _iYInGrid, refMap.m_iPlayLayer].iBlockID = 0; // 0 = no Block
 		refMap.arriXML_Level[_iXInGrid, _iYInGrid] = 0;
 	}
 

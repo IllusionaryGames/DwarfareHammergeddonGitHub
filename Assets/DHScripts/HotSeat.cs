@@ -99,6 +99,7 @@ public class HotSeat : MonoBehaviour {
 		// createMapWithoutDwarfs
 		refMap.createMapFromXMLWithoutDwarfs();
 		// refMap.createNewLevelfromTextureWithoutDwarfes(refMap.iCurrentLevel);
+		refMap.createDesignLayer();
 
 		// getStartPositions
 		GetStartPositionsDwarfFromXMLTeam1();

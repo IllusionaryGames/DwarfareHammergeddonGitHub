@@ -11,6 +11,12 @@ public class Map : MonoBehaviour {
 	public static int m_iBoundsX = 32;
 	public static int m_iBoundsY = 32;
 
+	public int m_iLayerAmount = 2;
+	public int m_iPlayLayer = 0;
+	public int m_iDesignLayer = 1;
+
+	public GameObject designObject;
+
 	// Mauli: Sort variables by namespace and
 	//		  and data type
 	//		  ( namespace over data type )
@@ -76,7 +82,7 @@ public class Map : MonoBehaviour {
 		set { m_loadLevelTexture = value; }
 	}
 
-	public m_struBlock[,] m_arrMap;
+	public m_struBlock[,,] m_arrMap;
 
 	public struct m_struBlock
 	{
@@ -85,6 +91,7 @@ public class Map : MonoBehaviour {
 		public int iYIndex;
 		public GameObject preRasterSphere;
 		public GameObject prefab1;
+		public GameObject designPrefab;
 		public Vector3 vec3Position;
 	}
 
@@ -193,26 +200,26 @@ public class Map : MonoBehaviour {
 		
 		// Debug.Log ("Map: levelWidth = " + refLoadLevelTexture.Levels[m_iCurrentLevel].m_tex2DLevel.width);
 		// Debug.Log ("Map: levelHeight = " + refLoadLevelTexture.Levels[m_iCurrentLevel].m_tex2DLevel.height);
-		m_arrMap = new m_struBlock[levelXMLSaver.Extract().GetLength (0) ,levelXMLSaver.Extract().GetLength (1)];
+		m_arrMap = new m_struBlock[levelXMLSaver.Extract().GetLength (0) ,levelXMLSaver.Extract().GetLength (1), m_iLayerAmount];
 
 		for (int y = 0; y < m_arrMap.GetLength (1); y++)
 		{
 			for( int x = 0; x < m_arrMap.GetLength (0); x++)
 			{
-				m_arrMap[x, y] = new m_struBlock ();
-				m_arrMap[x, y].vec3Position = new Vector3(x * m_gridX, y * m_gridY , 0);
-				m_arrMap[x, y].iXIndex = x;
-				m_arrMap[x, y].iYIndex = y;
+				m_arrMap[x, y, m_iPlayLayer] = new m_struBlock ();
+				m_arrMap[x, y, m_iPlayLayer].vec3Position = new Vector3(x * m_gridX, y * m_gridY , 0);
+				m_arrMap[x, y, m_iPlayLayer].iXIndex = x;
+				m_arrMap[x, y, m_iPlayLayer].iYIndex = y;
 				
 				if(arriXML_Level[x, y] == 0 && m_bCreateRaster)
 				{
 					// create Raster
 					GameObject goRasterSphere = 
-						Instantiate(m_preRasterSphere, new Vector3(m_arrMap[x, y].vec3Position.x, m_arrMap[x, y].vec3Position.y, 0),
+						Instantiate(m_preRasterSphere, new Vector3(m_arrMap[x, y, m_iPlayLayer].vec3Position.x, m_arrMap[x, y, m_iPlayLayer].vec3Position.y, 0),
 						            Quaternion.identity) as GameObject;
-					m_arrMap[x, y].preRasterSphere = goRasterSphere;
+					m_arrMap[x, y, m_iPlayLayer].preRasterSphere = goRasterSphere;
 				}
-				
+
 				// load Block
 				GameObject go2BlockAtPosition = refLoadLevelTexture.GetBlockPrefabByTypeID(arriXML_Level[x,y]);
 				// if block has Dwarf ID
@@ -225,37 +232,37 @@ public class Map : MonoBehaviour {
 					if(go2BlockAtPosition != null)
 					{
 						GameObject goBlockAtPosition = Instantiate(go2BlockAtPosition,
-						                                           new Vector3(m_arrMap[x, y].vec3Position.x, m_arrMap[x, y].vec3Position.y, 0),
+						                                           new Vector3(m_arrMap[x, y, m_iPlayLayer].vec3Position.x, m_arrMap[x, y, m_iPlayLayer].vec3Position.y, 0),
 						                                           go2BlockAtPosition.transform.rotation) as GameObject;
-						m_arrMap[x, y].prefab1  = goBlockAtPosition;
+						m_arrMap[x, y, m_iPlayLayer].prefab1  = goBlockAtPosition;
 					}
 				}
 				
 				if(refLoadLevelTexture.GetBlockTypeByTypeID(arriXML_Level[x, y]) != null)
 				{
-					m_arrMap[x, y].iBlockID  = refLoadLevelTexture.GetBlockTypeByTypeID(arriXML_Level[x, y]).iTypeID;
+					m_arrMap[x, y, m_iPlayLayer].iBlockID  = refLoadLevelTexture.GetBlockTypeByTypeID(arriXML_Level[x, y]).iTypeID;
 					// Treasure and Additionalblocks
-					if(m_arrMap[x,y].iBlockID == 72) // is it Treasure? 
+					if(m_arrMap[x,y, m_iPlayLayer].iBlockID == 72) // is it Treasure? 
 					{
 						refTeam.SaveTreasurePositionAtStart(x, y);
 						SetBlockIDAtPositionwithWidthHeightWithoutDestroy(90, x, y, 2, 2);
 					}
-					if(m_arrMap[x, y].iBlockID == 73) // is it ClassChanger
+					if(m_arrMap[x, y, m_iPlayLayer].iBlockID == 73) // is it ClassChanger
 					{
 						SetBlockIDAtPositionwithWidthHeightWithoutDestroy(91, x, y, 2, 2);
 					}
-					if(m_arrMap[x, y].iBlockID == 70) // is it Base Team 1
+					if(m_arrMap[x, y, m_iPlayLayer].iBlockID == 70) // is it Base Team 1
 					{
 						SetBlockIDAtPositionwithWidthHeightWithoutDestroy(92, x, y, 4, 4);
 					}
-					if(m_arrMap[x, y].iBlockID == 71) // is it Base Team 2
+					if(m_arrMap[x, y, m_iPlayLayer].iBlockID == 71) // is it Base Team 2
 					{
 						SetBlockIDAtPositionwithWidthHeightWithoutDestroy(93, x, y, 4, 4);
 					}
 				}
 				else
 				{
-					m_arrMap[x, y].iBlockID = 0; // no block									
+					m_arrMap[x, y, m_iPlayLayer].iBlockID = 0; // no block									
 				}				
 			}
 		}
@@ -268,32 +275,32 @@ public class Map : MonoBehaviour {
 		
 		// Debug.Log ("Map: levelWidth = " + refLoadLevelTexture.Levels[m_iCurrentLevel].m_tex2DLevel.width);
 		// Debug.Log ("Map: levelHeight = " + refLoadLevelTexture.Levels[m_iCurrentLevel].m_tex2DLevel.height);
-		m_arrMap = new m_struBlock[levelXMLSaver.Extract().GetLength (0) ,levelXMLSaver.Extract().GetLength (1)];
+		m_arrMap = new m_struBlock[levelXMLSaver.Extract().GetLength (0) ,levelXMLSaver.Extract().GetLength (1), m_iPlayLayer];
 
 		for (int y = 0; y < m_arrMap.GetLength (1); y++)
 		{
 			for( int x = 0; x < m_arrMap.GetLength (0); x++)
 			{
-				m_arrMap[x, y] = new m_struBlock ();
-				m_arrMap[x, y].vec3Position = new Vector3(x * m_gridX, y * m_gridY , 0);
-				m_arrMap[x, y].iXIndex = x;
-				m_arrMap[x, y].iYIndex = y;
+				m_arrMap[x, y, m_iPlayLayer] = new m_struBlock ();
+				m_arrMap[x, y, m_iPlayLayer].vec3Position = new Vector3(x * m_gridX, y * m_gridY , 0);
+				m_arrMap[x, y, m_iPlayLayer].iXIndex = x;
+				m_arrMap[x, y, m_iPlayLayer].iYIndex = y;
 
 
 				// CHECK != -1
 				if(refLoadLevelTexture.GetBlockIDAtPositionFromTexture(_iLevel, x , y) != -1)
 				{
-					m_arrMap [x, y].iBlockID = refLoadLevelTexture.GetBlockIDAtPositionFromTexture(_iLevel, x, y);
-					arriXML_Level[x, y] = m_arrMap [x, y].iBlockID;
+					m_arrMap [x, y, m_iPlayLayer].iBlockID = refLoadLevelTexture.GetBlockIDAtPositionFromTexture(_iLevel, x, y);
+					arriXML_Level[x, y] = m_arrMap [x, y, m_iPlayLayer].iBlockID;
 				}
 
 				if(arriXML_Level[x, y] == 0 && m_bCreateRaster)
 				{
 					// create Raster
 					GameObject goRasterSphere = 
-						Instantiate(m_preRasterSphere, new Vector3(m_arrMap[x, y].vec3Position.x, m_arrMap[x, y].vec3Position.y, 0),
+						Instantiate(m_preRasterSphere, new Vector3(m_arrMap[x, y, m_iPlayLayer].vec3Position.x, m_arrMap[x, y, m_iPlayLayer].vec3Position.y, 0),
 						            Quaternion.identity) as GameObject;
-					m_arrMap[x, y].preRasterSphere = goRasterSphere;
+					m_arrMap[x, y, m_iPlayLayer].preRasterSphere = goRasterSphere;
 				}
 				
 				// load Block
@@ -308,42 +315,60 @@ public class Map : MonoBehaviour {
 					if(go2BlockAtPosition != null)
 					{
 						GameObject goBlockAtPosition = Instantiate(go2BlockAtPosition,
-						                                           new Vector3(m_arrMap[x, y].vec3Position.x, m_arrMap[x, y].vec3Position.y, 0),
+						                                           new Vector3(m_arrMap[x, y, m_iPlayLayer].vec3Position.x, m_arrMap[x, y, m_iPlayLayer].vec3Position.y, 0),
 						                                           go2BlockAtPosition.transform.rotation) as GameObject;
-						m_arrMap[x, y].prefab1  = goBlockAtPosition;
+						m_arrMap[x, y, m_iPlayLayer].prefab1  = goBlockAtPosition;
 					}
 				}
 				
 				if(refLoadLevelTexture.GetBlockTypeByTypeID(arriXML_Level[x, y]) != null)
 				{
-					m_arrMap[x, y].iBlockID  = refLoadLevelTexture.GetBlockTypeByTypeID(arriXML_Level[x, y]).iTypeID;
-					arriXML_Level[x, y] = m_arrMap[x, y].iBlockID;
+					m_arrMap[x, y, m_iPlayLayer].iBlockID  = refLoadLevelTexture.GetBlockTypeByTypeID(arriXML_Level[x, y]).iTypeID;
+					arriXML_Level[x, y] = m_arrMap[x, y, m_iPlayLayer].iBlockID;
 					// Treasure and Additionalblocks
-					if(m_arrMap[x,y].iBlockID == 72) // is it Treasure? 
+					if(m_arrMap[x,y, m_iPlayLayer].iBlockID == 72) // is it Treasure? 
 					{
 						refTeam.SaveTreasurePositionAtStart(x, y);
 						SetBlockIDAtPositionwithWidthHeightWithoutDestroy(90, x, y, 2, 2);
 					}
-					if(m_arrMap[x, y].iBlockID == 73) // is it ClassChanger
+					if(m_arrMap[x, y, m_iPlayLayer].iBlockID == 73) // is it ClassChanger
 					{
 						SetBlockIDAtPositionwithWidthHeightWithoutDestroy(91, x, y, 2, 2);
 					}
-					if(m_arrMap[x, y].iBlockID == 70) // is it Base Team 1
+					if(m_arrMap[x, y, m_iPlayLayer].iBlockID == 70) // is it Base Team 1
 					{
 						SetBlockIDAtPositionwithWidthHeightWithoutDestroy(92, x, y, 4, 4);
 					}
-					if(m_arrMap[x, y].iBlockID == 71) // is it Base Team 2
+					if(m_arrMap[x, y, m_iPlayLayer].iBlockID == 71) // is it Base Team 2
 					{
 						SetBlockIDAtPositionwithWidthHeightWithoutDestroy(93, x, y, 4, 4);
 					}
 				}
 				else
 				{
-					m_arrMap[x, y].iBlockID = 0; // no block	
+					m_arrMap[x, y, m_iPlayLayer].iBlockID = 0; // no block	
 					arriXML_Level[x, y] = 0;
 				}				
 			}
 		}
+	}
+
+	public void createDesignLayer()
+	{
+//		m_arrMap = new m_struBlock[levelXMLSaver.Extract().GetLength (0) ,levelXMLSaver.Extract().GetLength (1), m_iLayerAmount];
+//		for (int y = 0; y < m_arrMap.GetLength (1); y++)
+//		{
+//			for( int x = 0; x < m_arrMap.GetLength (0); x++)
+//			{
+//				m_arrMap[x, y, m_iDesignLayer].vec3Position = new Vector3(x * m_gridX, y * m_gridY , m_iDesignLayer);
+//				m_arrMap[x, y, m_iDesignLayer].iXIndex = x;
+//				m_arrMap[x, y, m_iDesignLayer].iYIndex = y;
+//				GameObject designObjectClone = Instantiate(designObject,m_arrMap[x, y, m_iPlayLayer].vec3Position, designObject.transform.rotation) as GameObject;
+//				designObjectClone.transform.position = m_arrMap[x, y, m_iPlayLayer].vec3Position;
+//				m_arrMap[x, y, m_iDesignLayer].designPrefab = designObjectClone;
+//			}
+//		}
+
 	}
 
 
@@ -356,7 +381,7 @@ public class Map : MonoBehaviour {
 			{
 				if(m_arrMap != null)
 				{
-					Destroy (m_arrMap [x, y].prefab1);
+					Destroy (m_arrMap [x, y, m_iPlayLayer].prefab1);
 				}
 			}
 		}
@@ -364,7 +389,7 @@ public class Map : MonoBehaviour {
 
 	public bool IsRecoverable(int _iXGrid, int _iYGrid)
 	{
-		if(GetBlockTypeByID(m_arrMap[_iXGrid, _iYGrid].iBlockID).m_bIsRecoverable)
+		if(GetBlockTypeByID(m_arrMap[_iXGrid, _iYGrid, m_iPlayLayer].iBlockID).m_bIsRecoverable)
 		{
 			return true;
 		}
@@ -376,8 +401,8 @@ public class Map : MonoBehaviour {
 
 	public bool IsBaseTeam1AtPosition( int _iXGrid, int _iYGrid)
 	{
-		if(m_arrMap[_iXGrid, _iYGrid].iBlockID == 70 || 
-		   m_arrMap[_iXGrid, _iYGrid].iBlockID == 92)
+		if(m_arrMap[_iXGrid, _iYGrid, m_iPlayLayer].iBlockID == 70 || 
+		   m_arrMap[_iXGrid, _iYGrid, m_iPlayLayer].iBlockID == 92)
 		{
 			return true;
 		}
@@ -389,8 +414,8 @@ public class Map : MonoBehaviour {
 
 	public bool IsBaseTeam2AtPosition( int _iXGrid, int _iYGrid)
 	{
-		if(m_arrMap[_iXGrid, _iYGrid].iBlockID == 71 || 
-		   m_arrMap[_iXGrid, _iYGrid].iBlockID == 93)
+		if(m_arrMap[_iXGrid, _iYGrid, m_iPlayLayer].iBlockID == 71 || 
+		   m_arrMap[_iXGrid, _iYGrid, m_iPlayLayer].iBlockID == 93)
 		{
 			return true;
 		}
@@ -402,8 +427,8 @@ public class Map : MonoBehaviour {
 
 	public bool IsTreasurePileAtPosition(int _iXGrid, int _iYGrid)
 	{
-		if(m_arrMap[_iXGrid, _iYGrid].iBlockID == 72 ||
-		 m_arrMap[_iXGrid, _iYGrid].iBlockID == 90)
+		if(m_arrMap[_iXGrid, _iYGrid, m_iPlayLayer].iBlockID == 72 ||
+		 m_arrMap[_iXGrid, _iYGrid, m_iPlayLayer].iBlockID == 90)
 		{
 			return true;
 		}
@@ -415,8 +440,8 @@ public class Map : MonoBehaviour {
 
 	public bool IsClassChangerAtPosition(int _iXGrid, int _iYGrid)
 	{
-		if(m_arrMap[_iXGrid, _iYGrid].iBlockID == 73 ||
-		   m_arrMap[_iXGrid, _iYGrid].iBlockID == 91)
+		if(m_arrMap[_iXGrid, _iYGrid, m_iPlayLayer].iBlockID == 73 ||
+		   m_arrMap[_iXGrid, _iYGrid, m_iPlayLayer].iBlockID == 91)
 		{
 			return true;
 		}
@@ -431,19 +456,19 @@ public class Map : MonoBehaviour {
 	                                                              int _iYGridOrigin, int _iWidth, int _iHeight)
 	{
 		// Debug.Log("Map: set new IDs next to base");
-		int iBlockIDOrigin = m_arrMap[_iXGridOrigin, _iYGridOrigin].iBlockID;
+		int iBlockIDOrigin = m_arrMap[_iXGridOrigin, _iYGridOrigin, m_iPlayLayer].iBlockID;
 		for(int x = 0; x <  _iWidth; x++)
 		{
 			for (int y = 0; y < _iHeight; y++)
 			{
 //				Debug.Log("Map: set position");
-				m_arrMap[_iXGridOrigin + x,  _iYGridOrigin + y].iBlockID = _iNewBlockID;
+				m_arrMap[_iXGridOrigin + x,  _iYGridOrigin + y, m_iPlayLayer].iBlockID = _iNewBlockID;
 				arriXML_Level[_iXGridOrigin + x,  _iYGridOrigin + y] = _iNewBlockID;
 			}
 		}
 
 		// set OriginBlockID back
-		m_arrMap[_iXGridOrigin, _iYGridOrigin].iBlockID = iBlockIDOrigin;
+		m_arrMap[_iXGridOrigin, _iYGridOrigin, m_iPlayLayer].iBlockID = iBlockIDOrigin;
 		arriXML_Level[_iXGridOrigin, _iYGridOrigin] = iBlockIDOrigin;
 	}
 	
@@ -457,7 +482,7 @@ public class Map : MonoBehaviour {
 	
 		for (int i = 0; i < arriBlockFilter.Length; ++i)
 		{
-			if (m_arrMap[iOriginX, iOriginY].iBlockID == arriBlockFilter[i])
+			if (m_arrMap[iOriginX, iOriginY, m_iPlayLayer].iBlockID == arriBlockFilter[i])
 			{
 				ChangeBlockIDAtPosition(iNewBlockID, iOriginX, iOriginY);
 				
@@ -484,14 +509,14 @@ public class Map : MonoBehaviour {
 
 	public bool ChangeBlockIDAtPosition( int _iBlockID, int _iXGrid, int _iYGrid)
 	{
-		int CurrentBlockID = m_arrMap[_iXGrid, _iYGrid].iBlockID;
+		int CurrentBlockID = m_arrMap[_iXGrid, _iYGrid, m_iPlayLayer].iBlockID;
 
-		m_arrMap[_iXGrid, _iYGrid].iBlockID = _iBlockID;
+		m_arrMap[_iXGrid, _iYGrid, m_iPlayLayer].iBlockID = _iBlockID;
 		// only destroy block if it is not a player
 		if(CurrentBlockID != 74 && CurrentBlockID != 75 && CurrentBlockID != 76 &&
 		   CurrentBlockID != 80 && CurrentBlockID != 81 && CurrentBlockID != 82)
 		{
-			Destroy(m_arrMap[_iXGrid, _iYGrid].prefab1);
+			Destroy(m_arrMap[_iXGrid, _iYGrid, m_iPlayLayer].prefab1);
 		}
 		GameObject Prefab = new GameObject();
 		Prefab = GetBlockTypeByID(_iBlockID).m_preBlock;
@@ -499,8 +524,8 @@ public class Map : MonoBehaviour {
 		if (Prefab == null)
 			return false;
 		
-		GameObject Clone = Instantiate( Prefab, m_arrMap[_iXGrid, _iYGrid].vec3Position, Prefab.transform.rotation) as GameObject;
-		m_arrMap[_iXGrid, _iYGrid].prefab1 = Clone;
+		GameObject Clone = Instantiate( Prefab, m_arrMap[_iXGrid, _iYGrid, m_iPlayLayer].vec3Position, Prefab.transform.rotation) as GameObject;
+		m_arrMap[_iXGrid, _iYGrid, m_iPlayLayer].prefab1 = Clone;
 		return true;
 	}
 
@@ -524,8 +549,8 @@ public class Map : MonoBehaviour {
 
 	/*public bool IsDwarfAtPosition(int _iXGrid, int _iYGrid)
 	{
-		if( m_arrMap[_iXGrid, _iYGrid].iBlockID == 74 || m_arrMap[_iXGrid, _iYGrid].iBlockID == 75 || m_arrMap[_iXGrid, _iYGrid].iBlockID == 76 
-		 || m_arrMap[_iXGrid, _iYGrid].iBlockID == 80 || m_arrMap[_iXGrid, _iYGrid].iBlockID == 81 || m_arrMap[_iXGrid, _iYGrid].iBlockID == 82 )
+		if( m_arrMap[_iXGrid, _iYGrid, m_iPlayLayer].iBlockID == 74 || m_arrMap[_iXGrid, _iYGrid, m_iPlayLayer].iBlockID == 75 || m_arrMap[_iXGrid, _iYGrid, m_iPlayLayer].iBlockID == 76 
+		 || m_arrMap[_iXGrid, _iYGrid, m_iPlayLayer].iBlockID == 80 || m_arrMap[_iXGrid, _iYGrid, m_iPlayLayer].iBlockID == 81 || m_arrMap[_iXGrid, _iYGrid, m_iPlayLayer].iBlockID == 82 )
 		{
 			Debug.Log("Dwarf at Position " + _iXGrid + " " + _iYGrid);
 			return true;
@@ -536,7 +561,7 @@ public class Map : MonoBehaviour {
 
 	public bool IsDwarfOfTeam1(int _iXGrid, int _iYGrid)
 	{
-		if(m_arrMap[_iXGrid, _iYGrid].iBlockID == 74 || m_arrMap[_iXGrid, _iYGrid].iBlockID == 75 || m_arrMap[_iXGrid, _iYGrid].iBlockID == 76)
+		if(m_arrMap[_iXGrid, _iYGrid, m_iPlayLayer].iBlockID == 74 || m_arrMap[_iXGrid, _iYGrid, m_iPlayLayer].iBlockID == 75 || m_arrMap[_iXGrid, _iYGrid, m_iPlayLayer].iBlockID == 76)
 		{
 			Debug.Log("Dwarf is from Team 1");
 			return true;
@@ -547,7 +572,7 @@ public class Map : MonoBehaviour {
 
 	public bool IsDwarfOfTeam2(int _iXGrid, int _iYGrid)
 	{
-		if(m_arrMap[_iXGrid, _iYGrid].iBlockID == 80 || m_arrMap[_iXGrid, _iYGrid].iBlockID == 81 || m_arrMap[_iXGrid, _iYGrid].iBlockID == 82)
+		if(m_arrMap[_iXGrid, _iYGrid, m_iPlayLayer].iBlockID == 80 || m_arrMap[_iXGrid, _iYGrid, m_iPlayLayer].iBlockID == 81 || m_arrMap[_iXGrid, _iYGrid, m_iPlayLayer].iBlockID == 82)
 		{
 			Debug.Log("Dwarf is from Team 2");
 			return true;
@@ -633,7 +658,7 @@ public class Map : MonoBehaviour {
 	{
 		if (iIndexX >= 0 &&  iIndexX < 2 * m_iBoundsX && iIndexY >= 0 && iIndexY < 2 * m_iBoundsY)
 		{
-			return GetBlockTypeByID(m_arrMap[iIndexX, iIndexY].iBlockID).m_bIsSolid;
+			return GetBlockTypeByID(m_arrMap[iIndexX, iIndexY, m_iPlayLayer].iBlockID).m_bIsSolid;
 		}
 		return false;
 	}
@@ -642,7 +667,7 @@ public class Map : MonoBehaviour {
 	{
 		if (iIndexX >= 0 && iIndexX < 2 * m_iBoundsX && iIndexY >= 0 && iIndexY < 2 * m_iBoundsY)
 		{
-			return GetBlockTypeByID(m_arrMap[iIndexX, iIndexY].iBlockID).m_bPassable;
+			return GetBlockTypeByID(m_arrMap[iIndexX, iIndexY, m_iPlayLayer].iBlockID).m_bPassable;
 		}
 		return false;
 	}
@@ -651,7 +676,7 @@ public class Map : MonoBehaviour {
 	{
 		if (iIndexX >= 0 && iIndexX < 2 * m_iBoundsX && iIndexY >= 1 && iIndexY < 2 * m_iBoundsY)
 		{
-			return GetBlockTypeByID(m_arrMap[iIndexX, iIndexY].iBlockID).m_bIsClimbable;
+			return GetBlockTypeByID(m_arrMap[iIndexX, iIndexY, m_iPlayLayer].iBlockID).m_bIsClimbable;
 		}
 		return false;
 	}
@@ -670,7 +695,7 @@ public class Map : MonoBehaviour {
 	{
 		if (iIndexX >= 0 && iIndexX < 2 * m_iBoundsX && iIndexY >= 1 && iIndexY < 2 * m_iBoundsY)
 		{
-			return (m_arrMap[iIndexX, iIndexY].iBlockID == 0 && refTeam.GetDwarfCharByPosition(iIndexX, iIndexY) == null);
+			return (m_arrMap[iIndexX, iIndexY, m_iPlayLayer].iBlockID == 0 && refTeam.GetDwarfCharByPosition(iIndexX, iIndexY) == null);
 		}
 		return false;
 	}

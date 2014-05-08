@@ -597,7 +597,7 @@ public class DwarfChar : MonoBehaviour
 		{
 			if (!m_AnimationComponent.IsPlaying("digging"))
 			{
-				LoadLevelTexture.BlockType blockTypeAtPos = m_refMap.GetBlockTypeByID(m_refMap.m_arrMap[iIndexX, iIndexY].iBlockID);
+				LoadLevelTexture.BlockType blockTypeAtPos = m_refMap.GetBlockTypeByID(m_refMap.m_arrMap[iIndexX, iIndexY, m_refMap.m_iPlayLayer].iBlockID);
 
 				if (m_iMiningPositionX >= 0 && m_iMiningPositionY >= 0)
 				{
@@ -708,7 +708,7 @@ public class DwarfChar : MonoBehaviour
 			}
 		}
 						
-		if (m_refMap.m_arrMap[iIndexX, iIndexY - 1].iBlockID == 20 && success)
+		if (m_refMap.m_arrMap[iIndexX, iIndexY - 1, m_refMap.m_iPlayLayer].iBlockID == 20 && success)
 		{
 			m_refMap.ChangeBlockIDAtPosition(21, iIndexX, iIndexY - 1);
 		}
@@ -976,7 +976,7 @@ public class DwarfChar : MonoBehaviour
 					}
 					else
 					{
-						goTemp = m_refMap.m_arrMap[iIndexX, iIndexY].prefab1;
+						goTemp = m_refMap.m_arrMap[iIndexX, iIndexY, m_refMap.m_iPlayLayer].prefab1;
 					}
 					
 					if (goTemp != null)
@@ -1013,7 +1013,7 @@ public class DwarfChar : MonoBehaviour
 			return false;
 
 		if (m_refMap.IsTreasurePileAtPosition(iIndexX, iIndexY))
-		//if (m_refMap.m_arrMap[iIndexX, iIndexY].iBlockID == 20)
+		//if (m_refMap.m_arrMap[iIndexX, iIndexY, m_refMap.m_iPlayLayer].iBlockID == 20)
 		{
 			m_bHasTreasure = true;
 			m_refTeam.m_arrTeams[m_iTeamID - 1].bTeamHasTreasure = true;
@@ -1215,11 +1215,11 @@ public class DwarfChar : MonoBehaviour
 		if (m_AnimationComponent.GetClip("digging") == null)
 			return false;
 
-		LoadLevelTexture.BlockType blockTypeAtPos = m_refMap.GetBlockTypeByID(m_refMap.m_arrMap[iIndexX, iIndexY].iBlockID);
+		LoadLevelTexture.BlockType blockTypeAtPos = m_refMap.GetBlockTypeByID(m_refMap.m_arrMap[iIndexX, iIndexY, m_refMap.m_iPlayLayer].iBlockID);
 		
 		if (blockTypeAtPos == null)
 		{
-			Debug.LogWarning ("The ID: " + m_refMap.m_arrMap[iIndexX, iIndexY].iBlockID +
+			Debug.LogWarning ("The ID: " + m_refMap.m_arrMap[iIndexX, iIndexY, m_refMap.m_iPlayLayer].iBlockID +
 			                  " returns null as a block at the position " + iIndexX + ", " + iIndexY);
 			return false;
 		}
